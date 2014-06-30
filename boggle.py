@@ -126,9 +126,12 @@ class MenuScreen(GridLayout):
         self.render_boggle_layout("a", handle_swipe_callback)
         logging.info("About to loop through buttons.")
         for i, button in enumerate(self.buttons):
-            button.text = self.solve_boggle.boggle.boggle_array[i].upper()
+            if i not in self.ignore:
+                button.text = self.solve_boggle.boggle.boggle_array[i].upper()
+            else:
+                button.text = ""
 
-        self.words = self.solve_boggle.solve()
+        self.words = self.solve_boggle.solve(ignore_indexes=self.ignore)
         logging.info("Got words.")
 
     def render_boggle_layout(self, text, callback):
@@ -150,19 +153,30 @@ class MenuScreen(GridLayout):
 
         self.buttons = []
 
-        scroll = ScrollView(size_hint=(100, 300), size=(200, 200))
+        scroll = ScrollView()
 
-        self.add_widget(scroll)
+        lay = GridLayout(cols=1, spacing=20, size_hint_y=None)
+        lay.bind(minimum_height=lay.setter('height'))
 
-        lay = BoxLayout(orientation='vertical', spacing=10)
+        lay.add_widget(Label(text=""))
+
+        lay.add_widget(Label(text="%s number of words." % len(self.words)))
         # scrollview of labels
         for word in self.words:
             lay.add_widget(Label(text=word))
             # add word label to scrollview
 
+        lay.add_widget(Label(text=""))
+
         self.reset_button = Button(text="Reset")
+        self.reset_button.bind(on_press=self.reset_callback)
         lay.add_widget(self.reset_button)
+
         scroll.add_widget(lay)
+        self.add_widget(scroll)
+        
+        lay.add_widget(Label(text=""))
+
 
 class MyApp(App):
 
