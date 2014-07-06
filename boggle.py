@@ -1,5 +1,6 @@
 from kivy.app import App
 from kivy.uix.gridlayout import GridLayout
+from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.label import Label
 from kivy.uix.textinput import TextInput
@@ -138,9 +139,14 @@ class MenuScreen(GridLayout):
         logging.info("Rendering Boggle Layout.")
 
         self.cols = self.num_columns
+        if len(text) > 1:
+            self.font = self.width / (self.num_columns * len(text))
+        else:
+            self.font = self.height / (self.num_rows + 2)
+        print("Font size is %s" % self.font)
 
         for index in range(0, self.num_rows * self.num_columns):
-            self.buttons.append(Button(text=text))
+            self.buttons.append(Button(text=text, font_size=self.font))
             self.buttons[index].bind(on_press=callback)
             self.add_widget(self.buttons[index])
 
@@ -153,14 +159,14 @@ class MenuScreen(GridLayout):
 
         self.buttons = []
 
-        scroll = ScrollView()
+        scroll = ScrollView(pos_hint={'x':0, 'center_y': .5}, size=(self.x, self.height*14/15))
 
-        lay = GridLayout(cols=1, spacing=20, size_hint_y=None)
+        lay = GridLayout(cols=1, spacing=20, size_hint=(1, None))
         lay.bind(minimum_height=lay.setter('height'))
 
         lay.add_widget(Label(text=""))
 
-        lay.add_widget(Label(text="%s number of words." % len(self.words)))
+        lay.add_widget(Label(text="%s words." % len(self.words)))
         # scrollview of labels
         for word in self.words:
             lay.add_widget(Label(text=word))
@@ -168,14 +174,14 @@ class MenuScreen(GridLayout):
 
         lay.add_widget(Label(text=""))
 
-        self.reset_button = Button(text="Reset")
+        self.reset_button = Button(text="Reset", size_hint=(self.x, 0.08))
         self.reset_button.bind(on_press=self.reset_callback)
-        lay.add_widget(self.reset_button)
 
-        scroll.add_widget(lay)
-        self.add_widget(scroll)
-        
         lay.add_widget(Label(text=""))
+        scroll.add_widget(lay)
+
+        self.add_widget(scroll)
+        self.add_widget(self.reset_button)
 
 
 class MyApp(App):
