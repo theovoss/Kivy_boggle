@@ -154,12 +154,25 @@ class MenuScreen(GridLayout):
         logging.info("Rendering Boggle Solution Screen.")
 
         self.clear_widgets()
-
-        self.cols = 1
-
         self.buttons = []
 
-        scroll = ScrollView(pos_hint={'x':0, 'center_y': .5}, size=(self.x, self.height*14/15))
+        vert_lay = GridLayout(cols=1)
+
+        grid_lay = GridLayout(cols=self.num_columns)
+
+        for index in range(0, self.num_rows * self.num_columns):
+            self.buttons.append(Button(text="", font_size=14))
+            grid_lay.add_widget(self.buttons[index])
+
+        for i, button in enumerate(self.buttons):
+            if i not in self.ignore:
+                button.text = self.solve_boggle.boggle.boggle_array[i].upper()
+            else:
+                button.text = ""
+
+        vert_lay.add_widget(grid_lay)
+
+        scroll = ScrollView()
 
         lay = GridLayout(cols=1, spacing=20, size_hint=(1, None))
         lay.bind(minimum_height=lay.setter('height'))
@@ -180,8 +193,10 @@ class MenuScreen(GridLayout):
         lay.add_widget(Label(text=""))
         scroll.add_widget(lay)
 
-        self.add_widget(scroll)
-        self.add_widget(self.reset_button)
+        vert_lay.add_widget(scroll)
+        vert_lay.add_widget(self.reset_button)
+
+        self.add_widget(vert_lay)
 
 
 class MyApp(App):
