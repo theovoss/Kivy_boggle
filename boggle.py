@@ -180,7 +180,8 @@ class MenuScreen(GridLayout):
         self.clear_widgets()
         self.buttons = []
 
-        vert_lay = GridLayout(cols=1)
+        hor_lay = GridLayout(cols=2)
+        vert_lay = GridLayout(cols=1, size_hint=(0.25, 1))
 
         grid_lay = GridLayout(cols=self.num_columns)
 
@@ -194,7 +195,7 @@ class MenuScreen(GridLayout):
             else:
                 button.text = ""
 
-        vert_lay.add_widget(grid_lay)
+        hor_lay.add_widget(grid_lay)
 
         scroll = ScrollView()
 
@@ -219,8 +220,9 @@ class MenuScreen(GridLayout):
 
         vert_lay.add_widget(scroll)
         vert_lay.add_widget(self.reset_button)
+        hor_lay.add_widget(vert_lay)
 
-        self.add_widget(vert_lay)
+        self.add_widget(hor_lay)
 
 
 class MyApp(App):
