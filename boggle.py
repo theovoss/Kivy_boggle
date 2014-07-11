@@ -33,6 +33,7 @@ class MenuScreen(GridLayout):
         self.solve_boggle = None
 
         self.render_menu_screen()
+        self.grid = None
 
     def reset_callback(self, widget=None):
         logging.info("Reset Game Button Callback.")
@@ -72,7 +73,7 @@ class MenuScreen(GridLayout):
                 self.ignore.append(i)
         print(self.ignore)
 
-        self.game_time = int(self.game_time)
+        self.game_time = int(self.game_time_input.text)
         # clear the buttons so the new ones can be added.
         self.buttons = []
         self.render_boggle_game_screen()
@@ -85,6 +86,7 @@ class MenuScreen(GridLayout):
         logging.info("Rendering Menu Screen.")
         self.clear_widgets()
         self.cols = 2
+        self.grid = None
         self.add_widget(Label(text='Rows'))
         self.num_rows_input = TextInput()
         self.add_widget(self.num_rows_input)
@@ -105,13 +107,21 @@ class MenuScreen(GridLayout):
         logging.info("Rendering Boggle Setup Screen.")
 
         self.clear_widgets()
-        self.render_boggle_layout("enabled", self.button_configuration_callback)
+        self.cols = 1
+        if self.grid:
+            self.grid = None
+        
+        self.grid = GridLayout()
+        self.render_boggle_layout("enabled", self.button_configuration_callback, self.grid)
+        self.add_widget(self.grid)
+        h_box = BoxLayout(orientation='horizontal', size_hint=(1, 1/(self.num_rows+1)))
         self.reset_button = Button(text="Reset")
         self.reset_button.bind(on_press=self.reset_callback)
-        self.add_widget(self.reset_button)
+        h_box.add_widget(self.reset_button)
         self.confirm_board_button = Button(text="Confirm Board")
         self.confirm_board_button.bind(on_press=self.confirm_game_button)
-        self.add_widget(self.confirm_board_button)
+        h_box.add_widget(self.confirm_board_button)
+        self.add_widget(h_box)
 
     def render_boggle_game_screen(self):
         logging.info("Rendering game screen.")
@@ -124,7 +134,7 @@ class MenuScreen(GridLayout):
 
         self.solve_boggle = SolveBoggle(None, self.num_columns, self.num_rows)
         logging.info("Solve Boggle created.")
-        self.render_boggle_layout("a", handle_swipe_callback)
+        self.render_boggle_layout("", handle_swipe_callback, self.grid)
         logging.info("About to loop through buttons.")
         for i, button in enumerate(self.buttons):
             if i not in self.ignore:
@@ -132,13 +142,27 @@ class MenuScreen(GridLayout):
             else:
                 button.text = ""
 
+        timer = Label(text="%s" % self.game_time, size_hint=(1, 1/self.num_rows), font_size=self.font)
+
+        def timer_callback(dt):
+            timer.text = str(int(timer.text) -1)
+            pass
+
+        Clock.schedule_interval(timer_callback, 1)
+
+        self.add_widget(self.grid)
+        self.add_widget(timer)
+
+        # TODO: make this part of a function for a timer callback so it doesn't take time away from displaying the screen.
         self.words = self.solve_boggle.solve(ignore_indexes=self.ignore)
         logging.info("Got words.")
 
-    def render_boggle_layout(self, text, callback):
+    def render_boggle_layout(self, text, callback, grid_layout):
         logging.info("Rendering Boggle Layout.")
+        grid_layout.clear_widgets()
+        self.buttons = []
 
-        self.cols = self.num_columns
+        grid_layout.cols = self.num_columns
         if len(text) > 1:
             self.font = self.width / (self.num_columns * len(text))
         else:
@@ -148,7 +172,7 @@ class MenuScreen(GridLayout):
         for index in range(0, self.num_rows * self.num_columns):
             self.buttons.append(Button(text=text, font_size=self.font))
             self.buttons[index].bind(on_press=callback)
-            self.add_widget(self.buttons[index])
+            grid_layout.add_widget(self.buttons[index])
 
     def render_boggle_solution_screen(self):
         logging.info("Rendering Boggle Solution Screen.")
