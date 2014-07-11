@@ -35,6 +35,9 @@ class MenuScreen(GridLayout):
         self.render_menu_screen()
         self.grid = None
 
+    def get_font(self, button, text):
+        print("Button size is: %s" % button.size)
+
     def reset_callback(self, widget=None):
         logging.info("Reset Game Button Callback.")
         self.render_menu_screen()
@@ -62,10 +65,6 @@ class MenuScreen(GridLayout):
         else:
             obj.text = "enabled"
 
-    def show_solutions(self, dt):
-        logging.info("Showing solutions.")
-        self.render_boggle_solution_screen()
-
     def confirm_game_button(self, widget=None):
         logging.info("Confirm Game Button Callback.")
         for i, button in enumerate(self.buttons):
@@ -79,8 +78,6 @@ class MenuScreen(GridLayout):
         self.render_boggle_game_screen()
 
         logging.info("Time to sleep.")
-        print("Game time is: %s" % self.game_time)
-        Clock.schedule_once(self.show_solutions, self.game_time)
 
     def render_menu_screen(self):
         logging.info("Rendering Menu Screen.")
@@ -146,7 +143,8 @@ class MenuScreen(GridLayout):
 
         def timer_callback(dt):
             timer.text = str(int(timer.text) -1)
-            pass
+            if int(timer.text) == 0:
+                self.render_boggle_solution_screen()
 
         Clock.schedule_interval(timer_callback, 1)
 
@@ -167,7 +165,6 @@ class MenuScreen(GridLayout):
             self.font = self.width / (self.num_columns * len(text))
         else:
             self.font = self.height / (self.num_rows + 2)
-        print("Font size is %s" % self.font)
 
         for index in range(0, self.num_rows * self.num_columns):
             self.buttons.append(Button(text=text, font_size=self.font))
@@ -186,7 +183,7 @@ class MenuScreen(GridLayout):
         grid_lay = GridLayout(cols=self.num_columns)
 
         for index in range(0, self.num_rows * self.num_columns):
-            self.buttons.append(Button(text="", font_size=14))
+            self.buttons.append(Button(text="", font_size=self.font))
             grid_lay.add_widget(self.buttons[index])
 
         for i, button in enumerate(self.buttons):
