@@ -30,7 +30,7 @@ class MenuScreen(GridLayout):
         self.buttons = []
         self.ignore = []
 
-        self.solve_boggle = None
+        self.solve_boggle = SolveBoggle()
 
         self.render_menu_screen()
         self.grid = None
@@ -129,7 +129,7 @@ class MenuScreen(GridLayout):
             # TODO: add in swipes or keyboard for user to input words.
             pass
 
-        self.solve_boggle = SolveBoggle(None, self.num_columns, self.num_rows)
+        self.solve_boggle.set_board(self.num_columns, self.num_rows, None)
         logging.info("Solve Boggle created.")
         self.render_boggle_layout("", handle_swipe_callback, self.grid)
         logging.info("About to loop through buttons.")
