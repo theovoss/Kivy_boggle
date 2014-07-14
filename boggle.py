@@ -60,15 +60,15 @@ class MenuScreen(GridLayout):
             obj = widget
         else:
             obj = self
-        if obj.text == "enabled":
-            obj.text = "disabled"
+        if "enabled" in obj.text:
+            obj.text = "[size=%s][color=ff3333]disabled[/color][/size]" % int(self.font)
         else:
-            obj.text = "enabled"
+            obj.text = "[size=%s][color=52D017]enabled[/color][/size]" % int(self.font)
 
     def confirm_game_button(self, widget=None):
         logging.info("Confirm Game Button Callback.")
         for i, button in enumerate(self.buttons):
-            if button.text != "enabled":
+            if "enabled" not in button.text:
                 self.ignore.append(i)
         print(self.ignore)
 
@@ -109,7 +109,7 @@ class MenuScreen(GridLayout):
             self.grid = None
         
         self.grid = GridLayout()
-        self.render_boggle_layout("enabled", self.button_configuration_callback, self.grid)
+        self.render_boggle_layout("[color=52D017]enabled[/color]", self.button_configuration_callback, self.grid)
         self.add_widget(self.grid)
         h_box = BoxLayout(orientation='horizontal', size_hint=(1, 1/(self.num_rows+1)))
         self.reset_button = Button(text="Reset")
@@ -135,7 +135,7 @@ class MenuScreen(GridLayout):
         logging.info("About to loop through buttons.")
         for i, button in enumerate(self.buttons):
             if i not in self.ignore:
-                button.text = self.solve_boggle.boggle.boggle_array[i].upper()
+                button.text = "[size=%s]%s[/size]" % (int(self.font), self.solve_boggle.boggle.boggle_array[i].upper())
             else:
                 button.text = ""
 
@@ -162,12 +162,14 @@ class MenuScreen(GridLayout):
 
         grid_layout.cols = self.num_columns
         if len(text) > 1:
-            self.font = self.width / (self.num_columns * len(text))
+            self.font = self.width / (self.num_columns + len(text) - 2)
         else:
-            self.font = self.height / (self.num_rows + 2)
+            self.font = self.height / (self.num_rows * 2)
 
+        print("Font size is %s" % self.font)
+        print("Int Font size is %s" % int(self.font))
         for index in range(0, self.num_rows * self.num_columns):
-            self.buttons.append(Button(text=text, font_size=self.font))
+            self.buttons.append(Button(text="[size=%s]%s[/size]" % (int(self.font), text), markup=True))
             self.buttons[index].bind(on_press=callback)
             grid_layout.add_widget(self.buttons[index])
 
@@ -183,12 +185,12 @@ class MenuScreen(GridLayout):
         grid_lay = GridLayout(cols=self.num_columns)
 
         for index in range(0, self.num_rows * self.num_columns):
-            self.buttons.append(Button(text="", font_size=self.font))
+            self.buttons.append(Button(text="", markup=True))
             grid_lay.add_widget(self.buttons[index])
 
         for i, button in enumerate(self.buttons):
             if i not in self.ignore:
-                button.text = self.solve_boggle.boggle.boggle_array[i].upper()
+                button.text = "[size=%s]%s[/size]" % (int(self.font), self.solve_boggle.boggle.boggle_array[i].upper())
             else:
                 button.text = ""
 
