@@ -85,10 +85,10 @@ class MenuScreen(GridLayout):
         self.cols = 2
         self.grid = None
         self.add_widget(Label(text='Rows'))
-        self.num_rows_input = TextInput()
+        self.num_rows_input = TextInput(text='4')
         self.add_widget(self.num_rows_input)
         self.add_widget(Label(text='Columns'))
-        self.num_columns_input = TextInput()
+        self.num_columns_input = TextInput(text='4')
         self.add_widget(self.num_columns_input)
         self.add_widget(Label(text='Game Time (sec)'))
         self.game_time_input = TextInput(text=str(self.game_time))
