@@ -107,11 +107,14 @@ class MenuScreen(GridLayout):
         self.cols = 1
         if self.grid:
             self.grid = None
+
+        print("Size hint is: ")
+        print("Denominator: %s, Numerator: %s" % (self.num_rows + 1, self.num_rows))
         
-        self.grid = GridLayout()
+        self.grid = GridLayout(size_hint=(1, self.num_rows / (self.num_rows + 1.0)))
         self.render_boggle_layout("[color=52D017]enabled[/color]", self.button_configuration_callback, self.grid)
         self.add_widget(self.grid)
-        h_box = BoxLayout(orientation='horizontal', size_hint=(1, 1/(self.num_rows+1)))
+        h_box = BoxLayout(orientation='horizontal', size_hint=(1, 1 / (self.num_rows + 1.0)))
         self.reset_button = Button(text="Reset")
         self.reset_button.bind(on_press=self.reset_callback)
         h_box.add_widget(self.reset_button)
@@ -139,7 +142,7 @@ class MenuScreen(GridLayout):
             else:
                 button.text = ""
 
-        timer = Label(text="%s" % self.game_time, size_hint=(1, 1/self.num_rows), font_size=self.font)
+        timer = Label(text="%s" % self.game_time, size_hint=(1, 1.0/self.num_rows), font_size=self.font)
 
         def timer_callback(dt):
             timer.text = str(int(timer.text) -1)
@@ -166,8 +169,6 @@ class MenuScreen(GridLayout):
         else:
             self.font = self.height / (self.num_rows * 2)
 
-        print("Font size is %s" % self.font)
-        print("Int Font size is %s" % int(self.font))
         for index in range(0, self.num_rows * self.num_columns):
             self.buttons.append(Button(text="[size=%s]%s[/size]" % (int(self.font), text), markup=True))
             self.buttons[index].bind(on_press=callback)
