@@ -70,7 +70,7 @@ class MenuScreen(GridLayout):
         for i, button in enumerate(self.buttons):
             if "enabled" not in button.text:
                 self.ignore.append(i)
-        print(self.ignore)
+        logging.info("Ignore indexes are: %s" % self.ignore)
 
         self.game_time = int(self.game_time_input.text)
         # clear the buttons so the new ones can be added.
@@ -107,9 +107,6 @@ class MenuScreen(GridLayout):
         self.cols = 1
         if self.grid:
             self.grid = None
-
-        print("Size hint is: ")
-        print("Denominator: %s, Numerator: %s" % (self.num_rows + 1, self.num_rows))
         
         self.grid = GridLayout(size_hint=(1, self.num_rows / (self.num_rows + 1.0)))
         self.render_boggle_layout("[color=52D017]enabled[/color]", self.button_configuration_callback, self.grid)
