@@ -9,8 +9,17 @@ from kivy.uix.scrollview import ScrollView
 from kivy.clock import Clock
 
 import logging
+import re
 
 from bogglesolver.solve_boggle import SolveBoggle
+
+class IntInput(TextInput):
+
+    pat = re.compile('[^0-9]')
+    def insert_text(self, substring, from_undo=False):
+        pat = self.pat
+        s = re.sub(pat, '', substring)
+        return super(IntInput, self).insert_text(s, from_undo=from_undo)
 
 class MenuScreen(GridLayout):
     """First screen to ask how big"""
@@ -71,7 +80,6 @@ class MenuScreen(GridLayout):
             if "enabled" not in button.text:
                 self.ignore.append(i)
         logging.info("Ignore indexes are: %s" % self.ignore)
-
         self.game_time = int(self.game_time_input.text)
         # clear the buttons so the new ones can be added.
         self.buttons = []
@@ -85,13 +93,13 @@ class MenuScreen(GridLayout):
         self.cols = 2
         self.grid = None
         self.add_widget(Label(text='Rows'))
-        self.num_rows_input = TextInput(text='4')
+        self.num_rows_input = IntInput(text='4')
         self.add_widget(self.num_rows_input)
         self.add_widget(Label(text='Columns'))
-        self.num_columns_input = TextInput(text='4')
+        self.num_columns_input = IntInput(text='4')
         self.add_widget(self.num_columns_input)
         self.add_widget(Label(text='Game Time (sec)'))
-        self.game_time_input = TextInput(text=str(self.game_time))
+        self.game_time_input = IntInput(text=str(self.game_time))
         self.add_widget(self.game_time_input)
         self.cancel_button = Button(text="Cancel Boggle")
         self.cancel_button.bind(on_press=self.cancel_callback)
